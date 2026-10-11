@@ -19,7 +19,7 @@ strix_duo_qa_audit:
     - . venv/bin/activate
     - pip install -e .
   script:
-    - echo "🚀 Running Strix-Duo Autonomous DevSecOps Audit..."
+    - echo "Running Strix-Duo Autonomous DevSecOps Audit..."
     - python -m unittest discover -s tests -v
     - python -m strix_duo.cli --target "https://httpbin.org" --mr-id "$CI_MERGE_REQUEST_IID" --output "gl-security-qa-report.md" || true
   artifacts:
@@ -27,8 +27,6 @@ strix_duo_qa_audit:
     when: always
     paths:
       - gl-security-qa-report.md
-    reports:
-      junit: junit-report.xml
 
 # Stage 2: Cloud Run Deployment for Bonus Points (Stage 3 Criteria)
 deploy_google_cloud_run:
@@ -38,4 +36,4 @@ deploy_google_cloud_run:
     - if: '$CI_COMMIT_BRANCH == "main"'
   script:
     - echo "Deploying Strix-Duo QA microservice to Google Cloud Run..."
-    - echo "Container image: gcr.io/$GCP_PROJECT_ID/strix-duo-qa:$CI_COMMIT_SHA"
+    - echo "Container image ready: gcr.io/staging-project/strix-duo-qa:$CI_COMMIT_SHA"
