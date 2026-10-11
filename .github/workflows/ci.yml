@@ -1,0 +1,37 @@
+name: Strix-Duo QA CI & DevSecOps Gate
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test_and_audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Run Strix-Duo Unit Test Suite
+        run: |
+          python -m unittest discover -s tests -v
+
+      - name: Run Strix-Duo Autonomous DevSecOps Audit
+        run: |
+          python -m strix_duo.cli --target "https://httpbin.org" --output "ci-security-qa-report.md" || true
+
+      - name: Upload Security Report Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: strix-duo-qa-report
+          path: ci-security-qa-report.md
